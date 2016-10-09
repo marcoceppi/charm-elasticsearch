@@ -1,5 +1,7 @@
 import os
 
+from apt.debfile import DebPackage
+
 from charms.reactive import (
     when,
     when_not,
@@ -44,6 +46,20 @@ def apt_install():
 
 
 @when('apt.installed.elasticsearch')
+def level_set():
+    set_state('elasticsearch.installed')
+
+
+@when('elasticsearch.deb-install')
+@when_not('elasticsearch.install')
+def deb_install():
+    deb = resource_get('deb')
+    d = DebPackage(deb)
+    d.install()
+    set_state('elasticsearch.installed')
+
+
+@when('elasticsearch.installed')
 @when_not('elasticsearch.configured')
 def configure_elasticsearch():
     set_state('elasticsearch.configured')
