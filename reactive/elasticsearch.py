@@ -38,7 +38,7 @@ def check_install_path():
 
 @when('elasticsearch.apt-install')
 @when_not('apt.installed.elasticsearch')
-def install_elasticsearch():
+def apt_install():
     status_set('Queuing dependencies for install')
     apt.queue_install(['elasticsearch'])
 
