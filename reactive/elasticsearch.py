@@ -18,7 +18,6 @@ from charmhelpers.core.hookenv import (
 
 
 @when_not('elasticsearch.installed')
-@when_not('elasticsearch.needs-install')
 def check_install_path():
     try:
         status_set('Checking for resources')
