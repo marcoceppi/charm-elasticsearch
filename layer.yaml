@@ -1,0 +1,6 @@
+includes:
+ - 'layer:basic'
+ - 'layer:apt'
+ - 'interface:elasticsearch'
+ - 'interface:nrpe-external-master'
+ - 'interface:logs'

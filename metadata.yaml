@@ -1,0 +1,34 @@
+name: elasticsearch
+summary: Open Source, Distributed, RESTful, Search Engine built on Apache Lucene
+maintainers:
+ - Marco Ceppi <marco.ceppi@canonical.com>
+description: |
+  Elasticsearch is a distributed, open source search and analytics engine,
+  designed for horizontal scalability, reliability, and easy management.
+  It combines the speed of search with the power of analytics via a sophisticated,
+  developer-friendly query language covering structured, unstructured,
+  and time-series data.
+tags:
+ - database
+ - search
+ - logging
+subordinate: false
+peers:
+  peer:
+    interface: http
+provides:
+  client:
+    interface: elasticsearch
+  nrpe-external-master:
+    interface: nrpe-external-master
+    scope: container
+  logs:
+    interface: logs
+  data:
+    interface: block-storage
+    scope: container
+resources:
+  deb:
+    type: file
+    description: Elasticsearch DEBian file for offline installs
+    filename: elasticsearch.deb
