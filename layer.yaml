@@ -4,3 +4,7 @@ includes:
  # - 'interface:elasticsearch'
  # - 'interface:nrpe-external-master'
  # - 'interface:logs'
+options:
+  basic:
+    packages:
+      - default-jre

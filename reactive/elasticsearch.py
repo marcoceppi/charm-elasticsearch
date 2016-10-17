@@ -22,8 +22,6 @@ from charmhelpers.core.hookenv import (
 )
 
 
-import inspect
-
 @when_not('elasticsearch.installed')
 def check_install_path():
     # Make sure we've got the resource.
@@ -66,7 +64,7 @@ def deb_install():
     set_state('elasticsearch.installed')
 
 
-@when('elasticsearch.installed', 'jre.installed')
+@when('elasticsearch.installed')
 @when_not('elasticsearch.configured')
 def configure_elasticsearch():
     status_set('maintenance', 'Configuring elasticsearch')

@@ -33,7 +33,3 @@ resources:
     type: file
     description: Elasticsearch DEBian file for offline installs
     filename: elasticsearch.deb
-  jre:
-    type: file
-    description: Java Runtime Environment tar.gz file for offline installs
-    filename: jre.tar.gz
