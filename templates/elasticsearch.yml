@@ -1,0 +1,10 @@
+cluster.name: {{ config.cluster_name }}
+http.port: 9200
+network.host: ["_site_", "_local_"]
+discovery.zen.ping.multicast.enabled: false
+discovery.zen.ping.unicast.hosts:
+{% for reln in relations.peer %}
+  - {{ reln['private-address'] }}
+{% endfor %}
+# workaround for Kibana4 Export Everything bug https://github.com/elastic/kibana/issues/5524
+index.max_result_window: 2147483647
