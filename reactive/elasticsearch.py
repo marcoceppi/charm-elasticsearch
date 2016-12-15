@@ -1,7 +1,8 @@
 #!/usr/bin/env python3
 # pylint: disable=c0111,c0103,c0301
+import pwd
+import grp
 import os
-import subprocess
 
 from subprocess import CalledProcessError
 from apt.debfile import DebPackage
@@ -14,7 +15,7 @@ from charms.reactive import (
     set_state,
     remove_state,
 )
-from charmhelpers.core import hookenv, templating
+from charmhelpers.core import hookenv
 from charmhelpers.core.host import service_restart
 from charmhelpers.core.hookenv import (
     log,
@@ -59,9 +60,13 @@ def deb_install():
 @when_not('elasticsearch.configured')
 def configure_elasticsearch():
     status_set('maintenance', 'Configuring elasticsearch')
-    utils.re_edit_in_place('/etc/elasticsearch/elasticsearch.yml', {
+    path = '/etc/elasticsearch/elasticsearch.yml'
+    utils.re_edit_in_place(path, {
         r'#network.host: 192.168.0.1': 'network.host: ["_site_", "_local_"]',
     })
+    uid = pwd.getpwnam("root").pw_uid
+    gid = grp.getgrnam("elasticsearch").gr_gid
+    os.chown(path, uid, gid)
     set_state('elasticsearch.configured')
 
 @when('config-changed')
