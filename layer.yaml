@@ -1,10 +1,6 @@
 includes:
  - 'layer:basic'
  - 'layer:apt'
- # - 'interface:elasticsearch'
- # - 'interface:nrpe-external-master'
- # - 'interface:logs'
-options:
-  basic:
-    packages:
-      - default-jre
+ - 'layer:java'
+ - 'interface:elasticsearch'
+ - 'interface:nrpe-external-master'
