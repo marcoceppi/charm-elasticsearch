@@ -19,7 +19,7 @@ subordinate: false
 #    interface: http
 provides:
   client:
-    interface: elasticsearchlocal
+    interface: elasticsearch
   nrpe-external-master:
     interface: nrpe-external-master
     scope: container
