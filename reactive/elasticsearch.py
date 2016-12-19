@@ -3,6 +3,7 @@
 import pwd
 import grp
 import os
+import subprocess
 
 from subprocess import CalledProcessError
 from apt.debfile import DebPackage
@@ -59,8 +60,14 @@ def deb_install():
 @when('elasticsearch.installed', 'java.installed')
 @when_not('elasticsearch.configured')
 def configure_elasticsearch():
+    conf = config()
     status_set('maintenance', 'Configuring elasticsearch')
     path = '/etc/elasticsearch/elasticsearch.yml'
+    # check if Firewall has to be enabled
+    init_fw()
+    utils.re_edit_in_place(path, {
+        r'#cluster.name: my-application': 'cluster.name: {0}'.format(conf['cluster-name']),
+    })
     utils.re_edit_in_place(path, {
         r'#network.host: 192.168.0.1': 'network.host: ["_site_", "_local_"]',
     })
@@ -69,9 +76,10 @@ def configure_elasticsearch():
     os.chown(path, uid, gid)
     set_state('elasticsearch.configured')
 
-@when('config-changed')
+@hook('config-changed')
 def reconfigure():
     status_set('maintenance', 'Configuring elasticsearch')
+    init_fw()
     set_state('elasticsearch.configured')
 
 @when('elasticsearch.configured', 'java.installed')
@@ -91,7 +99,18 @@ def connect_to_client(client):
     cluster_name = conf['cluster-name']
     port = conf['port']
     client.configure(port, cluster_name)
+    host_ip = client.get_remote_ip()
+    add_fw_exception(host_ip)
 
+@when('client.broken')
+def remove_client(client):
+    host_ip = client.get_remote_ip()
+    subprocess.check_call(['ufw', 'delete', 'allow', 'prot', 'tcp', 'from', host_ip,
+    'to', 'any', 'port', '9200'])
+
+################################
+# Install and config functions #
+################################
 
 def check_install_path():
     # Make sure we've got the resource.
@@ -112,3 +131,23 @@ def check_install_path():
             # We've got the resource, but it doesn't appear to have downloaded properly.
             # Attempt apt installing elasticsearch instead.
         set_state('elasticsearch.apt-install')
+
+######################
+# Firewall functions #
+######################
+
+def init_fw():
+    conf = config()
+    utils.re_edit_in_place('/etc/default/ufw', {
+        r'IPV6=yes': 'IPV6=no',
+    })
+    if conf['firewall-enabled']:
+        subprocess.check_call(['ufw', 'allow', '22'])
+        subprocess.check_call(['ufw', 'deny', '9200'])
+        subprocess.check_output(['ufw', 'enable'], input='y\n')
+    else:
+        subprocess.check_output(['ufw', 'disable'])
+
+def add_fw_exception(host_ip):
+    subprocess.check_call(['ufw', 'allow', 'prot', 'tcp', 'from', host_ip,
+    'to', 'any', 'port', '9200'])
