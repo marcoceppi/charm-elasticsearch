@@ -74,6 +74,7 @@ def configure_elasticsearch():
     uid = pwd.getpwnam("root").pw_uid
     gid = grp.getgrnam("elasticsearch").gr_gid
     os.chown(path, uid, gid)
+    hookenv.open_port(conf['port'])
     set_state('elasticsearch.configured')
 
 @hook('config-changed')
@@ -84,7 +85,7 @@ def reconfigure():
 
 @when('elasticsearch.configured', 'java.installed')
 def restart():
-    try:
+    try:    
         status_set('maintenance', 'Restarting elasticsearch')
         service_restart('elasticsearch')
         set_state('elasticsearch.ready')
@@ -100,13 +101,16 @@ def connect_to_client(client):
     port = conf['port']
     client.configure(port, cluster_name)
     host_ip = client.get_remote_ip()
+    print(host_ip)
     add_fw_exception(host_ip)
 
 @when('client.broken')
 def remove_client(client):
     host_ip = client.get_remote_ip()
-    subprocess.check_call(['ufw', 'delete', 'allow', 'prot', 'tcp', 'from', host_ip,
-    'to', 'any', 'port', '9200'])
+    print(host_ip)
+    subprocess.check_call(['ufw', 'delete', 'allow', 'proto', 'tcp', 'from',
+    host_ip, 'to', 'any', 'port', '9200'])
+
 
 ################################
 # Install and config functions #
@@ -143,11 +147,10 @@ def init_fw():
     })
     if conf['firewall-enabled']:
         subprocess.check_call(['ufw', 'allow', '22'])
-        subprocess.check_call(['ufw', 'deny', '9200'])
-        subprocess.check_output(['ufw', 'enable'], input='y\n')
+        subprocess.check_output(['ufw', 'enable'], input='y\n', universal_newlines=True)
     else:
         subprocess.check_output(['ufw', 'disable'])
 
 def add_fw_exception(host_ip):
-    subprocess.check_call(['ufw', 'allow', 'prot', 'tcp', 'from', host_ip,
+    subprocess.check_call(['ufw', 'allow', 'proto', 'tcp', 'from', host_ip,
     'to', 'any', 'port', '9200'])
