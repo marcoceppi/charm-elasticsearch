@@ -24,7 +24,7 @@ options:
     default: 9200
     description: |
       This is the port that where Elasticsearch will be running.
-  firewall_enabled:
+  firewall-enabled:
     type: boolean
     default: true
     description: |
