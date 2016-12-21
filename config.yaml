@@ -1,13 +1,52 @@
 options:
+  install_sources:
+    type: string
+    default: deb https://artifacts.elastic.co/packages/5.x/apt stable main
+    description: apt repository to fetch beats from
+  install_keys:
+    type: string
+    default: D88E42B4
+    description: repository key
+  install-package:
+    type: string
+    default: "online"
+    description: |
+      This gives you the option to install elasticsearch 'offline' by giving the
+      path of the debian package or 'online' to install it by adding repository
+      and downloading the package.
   cluster-name:
     type: string
     default: "elasticsearch"
     description: |
       This sets the elasticsearch cluster name.
-  firewall_enabled:
+  port:
+    type: int
+    default: 9200
+    description: |
+      This is the port that where Elasticsearch will be running.
+  firewall-enabled:
     type: boolean
     default: true
     description: |
       By default, the admin and peer ports (9200 and 9300) are only accessible
       to clients and peers respectively. Switch this to false to enable access
       from any machine.
+  java-major:
+    type: string
+    default: "8"
+    description: |
+      Major version of Java. Defaults to 8. Supported versions are 'Oracle java 8' and 'openjdk 6/7/8'
+  java-flavor:
+    type: string
+    default: "openjdk"
+    description: |
+      Flavor of Java to install. Possible options right now are 'openjdk'
+      and 'oracle'. Default value is 'openjdk'
+  install-type:
+    type: string
+    default: "full"
+    description: |
+      Type of install to perform. Valid options are 'jre' or 'full'. The
+      default is 'jre', which will install the Java Runtime Environment
+      (JRE). Setting this to 'full' will install the Java Development
+      Kit (JDK) in addition to the JRE.

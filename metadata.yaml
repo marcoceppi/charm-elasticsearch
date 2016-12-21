@@ -14,20 +14,20 @@ tags:
  - search
  - logging
 subordinate: false
-peers:
-  peer:
-    interface: http
-# provides:
-  # client:
-  #   interface: elasticsearch
-  # nrpe-external-master:
-  #   interface: nrpe-external-master
-  #   scope: container
-  # logs:
-  #   interface: logs
-  # data:
-  #   interface: block-storage
-  #   scope: container
+#peers:
+#  peer:
+#    interface: http
+provides:
+  client:
+    interface: elasticsearch
+  nrpe-external-master:
+    interface: nrpe-external-master
+    scope: container
+#  logs:
+#    interface: logs
+#  data:
+#    interface: block-storage
+#    scope: container
 resources:
   deb:
     type: file
