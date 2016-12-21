@@ -85,7 +85,7 @@ def reconfigure():
 
 @when('elasticsearch.configured', 'java.installed')
 def restart():
-    try:    
+    try:
         status_set('maintenance', 'Restarting elasticsearch')
         service_restart('elasticsearch')
         set_state('elasticsearch.ready')
@@ -100,17 +100,18 @@ def connect_to_client(client):
     cluster_name = conf['cluster-name']
     port = conf['port']
     client.configure(port, cluster_name)
-    host_ip = client.get_remote_ip()
-    print(host_ip)
-    add_fw_exception(host_ip)
+    clients = client.list_connected_clients_data()
+    for c in clients:
+        add_fw_exception(c)
 
 @when('client.broken')
 def remove_client(client):
-    host_ip = client.get_remote_ip()
-    print(host_ip)
-    subprocess.check_call(['ufw', 'delete', 'allow', 'proto', 'tcp', 'from',
-    host_ip, 'to', 'any', 'port', '9200'])
-
+    subprocess.check_output(['ufw', 'reset'], input='y\n', universal_newlines=True)
+    init_fw()
+    clients = client.list_connected_clients_data
+    for c in clients:
+        if c is not None:
+            add_fw_exception(c)
 
 ################################
 # Install and config functions #
